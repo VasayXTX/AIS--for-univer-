@@ -1,0 +1,11 @@
+AIS 1.0. Copyright © Vasiliy Tsubenko. 2011
+
+Declaration:
+AIS (Automated Information System) is a small application to monitor development for projects and accounting activities of developers in the company. 
+Program allows you to generate reports, including Gantt chart.
+
+Technical description:
+The program is written in C++ using Qt 4.7.0. As DBMS working SQLite.
+
+Notes:
+Path to database must be kept in the Config.ais.
