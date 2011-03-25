@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resource/Images/Main.png</file>
+        <file>Resource/Images/GanttChart.png</file>
+        <file>Resource/Images/Project.ico</file>
+        <file>Resource/Images/Problem.ico</file>
+        <file>Resource/Images/Edit.png</file>
+        <file>Resource/Images/Report.ico</file>
+        <file>Resource/Images/Add.ico</file>
+        <file>Resource/Images/Delete.ico</file>
+        <file>Resource/Images/Developer.ico</file>
+        <file>Resource/Images/First.ico</file>
+        <file>Resource/Images/Last.ico</file>
+        <file>Resource/Images/Next.ico</file>
+        <file>Resource/Images/Prev.ico</file>
+        <file>Resource/Images/Exit.ico</file>
+        <file>Resource/Images/Company.ico</file>
+        <file>Resource/Images/ExportHTML.ico</file>
+        <file>Resource/Images/Create.ico</file>
+        <file>Resource/Images/About.ico</file>
+        <file>Resource/Images/Contract.ico</file>
+        <file>Resource/Images/Distribution.ico</file>
+        <file>Resource/Images/Depending.ico</file>
+        <file>Resource/Images/WorkStatement.ico</file>
+    </qresource>
+</RCC>
