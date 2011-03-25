@@ -1,0 +1,260 @@
+<html>
+<head>
+	<title>Gantt chart</title>
+	
+	<script type="text/javascript">
+	function Task(from, to, task, status)
+	{
+		var _from = new Date();	
+		var _to = new Date();
+		var _task = task;
+		var _resource = from + " - " + to;
+		var _status = status;
+		var dvArr = (from.split(' '))[0].split('.');
+		_from.setFullYear(parseInt(dvArr[2], 10), parseInt(dvArr[1], 10) - 1, parseInt(dvArr[0], 10));
+		dvArr = (to.split(' '))[0].split('.');
+		_to.setFullYear(parseInt(dvArr[2], 10), parseInt(dvArr[1], 10) - 1, parseInt(dvArr[0], 10));		
+		
+		this.GetFrom = function(){ return _from};
+		this.GetTo = function(){ return _to};
+		this.GetTask = function(){ return _task};
+		this.GetResource = function(){ return _resource};
+		this.GetStatus = function(){ return _status};
+	}
+	
+	function Gantt(gDiv)
+	{
+		var _GanttDiv = gDiv;
+		var _taskList = new Array();		
+		
+		this.AddTask = function(value)
+		{
+			_taskList.push(value);
+			
+		}
+		
+		this.Draw = function()
+		{
+			var _offSet = 0;
+			var _dateDiff = 0;
+			var _currentDate = new Date();
+			var _maxDate = new Date();
+			var _minDate = new Date();	
+			var _dTemp = new Date();
+			var _firstRowStr = "<table border=2 class='GanttTable'><tr><td rowspan='2' width='200px' style='background-color: #DCDCDC; width:200px;'><div class='GTaskTitle' style='width:200px;'>Task</div></td>";
+			var _thirdRow = ""; 
+			var _gStr = "";		
+			var _colSpan = 0;
+			var counter = 0;
+			
+			var height = 31;
+			
+			_currentDate.setFullYear(_currentDate.getFullYear(), _currentDate.getMonth(), _currentDate.getDate());
+			if(!_taskList.length)
+			{
+				return;
+			}
+			//Find max and min from dates of tasks
+			_maxDate.setFullYear(_taskList[0].GetTo().getFullYear(), _taskList[0].GetTo().getMonth(), _taskList[0].GetTo().getDate());
+			_minDate.setFullYear(_taskList[0].GetFrom().getFullYear(), _taskList[0].GetFrom().getMonth(), _taskList[0].GetFrom().getDate());
+			for(i = 0; i < _taskList.length; i++)
+			{
+				if(Date.parse(_taskList[i].GetFrom()) < Date.parse(_minDate))
+					_minDate.setFullYear(_taskList[i].GetFrom().getFullYear(), _taskList[i].GetFrom().getMonth(), _taskList[i].GetFrom().getDate());
+				if(Date.parse(_taskList[i].GetTo()) > Date.parse(_maxDate))
+					_maxDate.setFullYear(_taskList[i].GetTo().getFullYear(), _taskList[i].GetTo().getMonth(), _taskList[i].GetTo().getDate());						
+			}
+			
+			//Add at least 5 days for better displaying
+			_minDate.setFullYear(_minDate.getFullYear(), _minDate.getMonth(), _minDate.getDate() - 5);
+			_maxDate.setFullYear(_maxDate.getFullYear(), _maxDate.getMonth(), _maxDate.getDate() + 10);
+			
+			//--------------------------------------------------
+			
+			_gStr = "";
+			_gStr += "</tr><tr>";
+			_thirdRow = "<tr><td>&nbsp;</td>";
+			_dTemp.setFullYear(_minDate.getFullYear(), _minDate.getMonth(), _minDate.getDate());
+			while(Date.parse(_dTemp) <= Date.parse(_maxDate))
+			{	
+				if(_dTemp.getDay() % 6 == 0) //Weekend
+				{
+					_gStr += "<td class='GWeekend'><div style='width:24px;'>" + _dTemp.getDate() + "</div></td>";
+					if(Date.parse(_dTemp) == Date.parse(_currentDate))						
+						_thirdRow += "<td id='GC_" + (counter++) + "' class='GToDay' style='height:" + (_taskList.length * height) + "'>&nbsp;</td>";
+					else
+						_thirdRow += "<td id='GC_" + (counter++) + "' class='GWeekend' style='height:" + (_taskList.length * height) + "'>&nbsp;</td>";
+				}
+				else
+				{
+					_gStr += "<td class='GDay'><div style='width:24px;'>" + _dTemp.getDate() + "</div></td>";
+					if(Date.parse(_dTemp) == Date.parse(_currentDate))						
+						_thirdRow += "<td id='GC_" + (counter++) + "' class='GToDay' style='height:" + (_taskList.length * height) + "'>&nbsp;</td>";
+					else
+						_thirdRow += "<td id='GC_" + (counter++) + "' class='GDay'>&nbsp;</td>";
+				}
+				if(_dTemp.getDate() < GetDaysInMonth(_dTemp.getMonth() + 1, _dTemp.getFullYear()))
+				{
+					if(Date.parse(_dTemp) == Date.parse(_maxDate))
+					{							
+						_firstRowStr += "<td class='GMonth' colspan='" + (_colSpan + 1) + "'>" + GetMonthNameByNum(_dTemp.getMonth() + 1) + "/" + _dTemp.getFullYear() + "</td>";							
+					}
+					_dTemp.setDate(_dTemp.getDate() + 1);
+					_colSpan++;
+				}					
+				else 
+				{
+					_firstRowStr += "<td class='GMonth' colspan='" + (_colSpan + 1) + "'>" + GetMonthNameByNum(_dTemp.getMonth() + 1) + "/" + _dTemp.getFullYear() + "</td>";
+					_colSpan = 0;
+					if(_dTemp.getMonth() == 11) //December
+					{
+						_dTemp.setFullYear(_dTemp.getFullYear() + 1, 0, 1);
+					}
+					else
+					{
+						_dTemp.setFullYear(_dTemp.getFullYear(), _dTemp.getMonth() + 1, 1);
+					}
+				}					
+			}
+			_thirdRow += "</tr>"; 				
+			_gStr += "</tr>" + _thirdRow;				
+			_gStr += "</table>";
+			_gStr = _firstRowStr + _gStr;				
+			for(i = 0; i < _taskList.length; i++)
+			{
+				_offSet = Math.ceil((Date.parse(_taskList[i].GetFrom()) - Date.parse(_minDate)) / (24 * 60 * 60 * 1000));
+				_dateDiff = Math.ceil((Date.parse(_taskList[i].GetTo()) - Date.parse(_taskList[i].GetFrom())) / (24 * 60 * 60 * 1000) + 1);
+				_gStr += "<div style='position:absolute; top:" + ((height - 1) * i + 40) + "; left:" + (_offSet * 27 + 204) + "; width:" + (27 * _dateDiff - 1 + 100) + "'><div title='" + _taskList[i].GetTask() + "' class='GTask" + _taskList[i].GetStatus() + "' style='float:left; width:" + (27 * _dateDiff - 1) + "px;'>" + "</div></div>";
+				_gStr += "<div class='GProj' style='position:absolute; top:" + ((height - 1) * i + 40) + "; left:5px'>" + _taskList[i].GetTask() + "</div>";
+				_gStr += "<div class='GRes' style='position:absolute; top:" + ((height - 1) * i + 40) + "; left:" + (_offSet * 27 + 204 + 27 * _dateDiff + 10) + "px'>" + _taskList[i].GetResource() + "</div>";
+			}
+			
+			_GanttDiv.innerHTML = _gStr;
+		}
+	}	
+	
+	function GetDaysInMonth(month, year)  
+	{
+		
+		var days;		
+		switch(month)
+		{
+			case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+				days = 31;
+				break;
+			case 4: case 6: case 9: case 11:
+				days = 30;
+				break;
+			case 2:
+				if (((year% 4)==0) && ((year% 100)!=0) || ((year% 400)==0))		//Is leap year				
+					days = 29;				
+				else								
+					days = 28;				
+				break;
+		}
+		return (days);
+	}
+	
+	function GetMonthNameByNum(num)
+	{
+		var arrM = ["January", "Febrary", "March", "April", "May", "Juny", "July", "August", "September", "October", "November", "December"];
+		return arrM[num-1];
+	}
+	
+</script>
+	<style type="text/css">
+	
+		h1 
+		{
+			border-top: 2px ridge #9C9C9C;
+			border-bottom: 2px ridge #9C9C9C;
+			color: olive;
+			text-align: center;
+			width: 50%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.Gantt, .GanttTable
+		{
+			font-family: tahoma, arial, verdana;
+			font-size: 11px;
+		}
+		
+		.Gantt 
+		{
+			position: relative;
+			top: 30px;
+		}
+		
+		.GanttTable
+		{
+			border-width: 2px; 
+			border-collapse: collapse; 
+			border-color: #9C9C9C; 
+			border-style: ridge;
+		}
+		
+		.GTaskTitle 
+		{
+			font-weight: bold;
+		}
+		
+		.GMonth 
+		{
+			padding-left: 5px;
+			font-weight: bold;	
+			background-color: #DCDCDC;
+		}
+		
+		.GToday
+		{
+			background-color: #FDFDE0;	
+		}
+		
+		.GWeekend
+		{
+			background-color: #ECECEC;
+			text-align: center;
+		}
+		
+		.GDay
+		{
+			text-align: center;
+		}
+		
+		.GTask0, .GTask1, .GTask2
+		{
+			border: 1px solid black;
+			height:14px;
+		}
+		
+		.GTask0
+		{
+			background-color:red;
+		}
+		
+		.GTask1
+		{
+			background-color:yellow;
+		}
+		
+		.GTask2
+		{
+			background-color:green;
+		}
+		
+		.GRes
+		{
+			background-color: white;
+			border: 1px dotted black;
+			white-space:nowrap;
+		}
+		
+		.GProj
+		{
+			font-weight: bold;
+		}
+	
+	</style>
+</head>

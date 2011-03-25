@@ -1,0 +1,94 @@
+<html>
+
+<head>
+	<title>Work statement</title>
+	
+	<script type="text/javascript">
+		function WSElem(aDeveloper, aTask, aTime)
+		{
+			var developer = aDeveloper;
+			var task = aTask;
+			var time = aTime;
+			this.Developer = function(){ return developer};
+			this.Task = function(){ return task};
+			this.Time = function(){ return time};
+		}
+		
+		function WorkStatement(aDiv)
+		{
+			var inDiv = aDiv;
+			var arrElem = new Array();
+			
+			this.AddElem = function(aElem)
+			{
+				arrElem.push(aElem);
+			}
+			
+			this.Draw = function()
+			{
+				var resStr = "<table border=2 class='WSTable'>";
+				resStr += "<tr><th>#</th><th>Developer</th><th>Task</th><th>Elapsed time<br>(in hours)</br></th></tr>";
+				var sum = 0;
+				for (var i = 0; i < arrElem.length; ++i)
+				{
+					resStr += "<tr><td>" + (i + 1) + "</td><td>" + arrElem[i].Developer() + "</td><td>" + arrElem[i].Task() + "</td><td>" + arrElem[i].Time() + "</td></tr>";
+					sum += arrElem[i].Time();
+				}
+				resStr += "<tr><td colspan=3 style='text-align: left;'>Total elapsed time: </td><td>" + sum + "</td></tr>";
+				resStr += "</table>";
+				
+				inDiv.innerHTML = resStr;
+			}
+		}
+	</script>
+	
+	<style type="text/css">
+		h1 
+		{
+			border-top: 2px ridge #9C9C9C;
+			border-bottom: 2px ridge #9C9C9C;
+			color: olive;
+			text-align: center;
+			width: 30%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.CWS
+		{
+			position: relative;
+			top: 30px;
+			font-family:tahoma, arial, verdana;
+			font-size:8px;		
+		}
+		
+		.WSTable
+		{
+			margin-left: auto;
+			margin-right: auto;
+			border-width: 2px;
+			border-collapse: collapse;
+			border-color: #9C9C9C; 
+			border-style: ridge;
+			font-family:tahoma, arial, verdana;
+			font-size:14px;
+		}
+		
+		.WSTable th, .WSTable td
+		{
+			border-width: 1px;
+			padding: 10px;
+		}
+		
+		.WSTable th
+		{
+			background-color: #DCDCDC;
+		}
+		
+		.WSTable td
+		{
+			text-align: center;
+		}
+	</style>
+	
+</head>
